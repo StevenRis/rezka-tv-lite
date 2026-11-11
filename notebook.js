@@ -7,12 +7,12 @@
  function el(id){return sdk.el(id);}
  function text(id,value){sdk.text(id,value);}
  function safe(value){return String(value||'').replace(/https?:\/\/[^\s"']+/g,'[ссылка]');}
- function validBase(value){var a=document.createElement('a');a.href=value;return a.protocol==='https:'&&/^[a-z0-9-]+\.trycloudflare\.com$/.test(a.host)&&!a.username&&!a.password&&(a.pathname==='/'||a.pathname==='')&&!a.search&&!a.hash;}
+ function validBase(value){var a=document.createElement('a');a.href=value;return a.protocol==='https:'&&/^[a-z0-9-]+\.(trycloudflare\.com|ngrok-free\.(dev|app))$/.test(a.host)&&!a.username&&!a.password&&(a.pathname==='/'||a.pathname==='')&&!a.search&&!a.hash;}
  function isMovie(url){return typeof url==='string'&&/^https:\/\/rezka\.ag\/(films|cartoons)\/[a-z0-9-]+\/\d+-[^\s/?#]+\.html$/.test(url);}
  function save(){try{localStorage.setItem('rtl-backend-url',base);localStorage.setItem('rtl-backend-token',token);localStorage.setItem('rtl-movie-prefs',JSON.stringify(prefs));}catch(ignore){}}
  function connected(){return !!(base&&token);}
  function request(path,body,secret,done){
-  var xhr=new XMLHttpRequest();xhr.open('POST',base+path,true);xhr.timeout=65000;xhr.setRequestHeader('Content-Type','application/json');if(secret){xhr.setRequestHeader('X-Rezka-Test',secret);}
+  var xhr=new XMLHttpRequest();xhr.open('POST',base+path,true);xhr.timeout=65000;xhr.setRequestHeader('Content-Type','application/json');if(/\.ngrok-free\.(dev|app)$/.test(base)){xhr.setRequestHeader('ngrok-skip-browser-warning','1');}if(secret){xhr.setRequestHeader('X-Rezka-Test',secret);}
   xhr.onload=function(){var data;try{data=JSON.parse(xhr.responseText);}catch(ignore){done('Ответ backend не распознан.');return;}
    if(xhr.status!==200){if(xhr.status===401&&path!=='/api/pair'){token='';save();}done(xhr.status===404?'Обнови backend на ноутбуке до версии 0.3.':safe(data.error||('HTTP '+xhr.status)));return;}done(null,data);
   };
@@ -27,7 +27,7 @@
  }
  function pair(){
   var value=el('backend-url').value.replace(/^\s+|\s+$/g,'').replace(/\/$/,'');var code=el('backend-code').value.replace(/\s/g,'');
-  if(!validBase(value)){text('notebook-status','Нужен HTTPS-адрес trycloudflare.com с экрана ноутбука.');return;}
+  if(!validBase(value)){text('notebook-status','Нужен HTTPS-адрес ngrok или Cloudflare с экрана ноутбука.');return;}
   if(!/^[0-9]{6}$/.test(code)){text('notebook-status','Введи шесть цифр кода.');return;}
   base=value;text('notebook-status','Подключаю ноутбук…');el('pair-button').disabled=true;
   request('/api/pair',{code:code},'',function(error,data){el('pair-button').disabled=false;if(error){text('notebook-status',error);return;}

@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10141c">
 <title>Rezka TV Lite</title>
-<link rel="stylesheet" href="style.css?v=0.2.0">
+<link rel="stylesheet" href="style.css?v=0.2.1">
 </head>
 <body>
-<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.2.0</span></header>
+<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.2.1</span></header>
 <main>
 <p class="eyebrow">PHILIPS · SAPHI</p>
 <h1>Большой экран.<br>Простое управление.</h1>
@@ -36,11 +36,11 @@
 </section>
 <section id="notebook" class="screen" hidden>
 <h2>Подключить ноутбук</h2><p>Запусти новый backend на ноутбуке и введи шестизначный код с его экрана. Код в чат отправлять не нужно.</p>
-<label for="backend-url">HTTPS-адрес backend</label><input id="backend-url" type="url" maxlength="250" placeholder="https://название.trycloudflare.com" autocomplete="off">
+<label for="backend-url">HTTPS-адрес backend</label><input id="backend-url" type="url" maxlength="250" placeholder="https://название.ngrok-free.dev" autocomplete="off">
 <label for="backend-code">Одноразовый код с ноутбука</label><input id="backend-code" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off">
 <p id="notebook-status" class="result" role="status">Ноутбук ещё не подключён.</p>
 <div class="controls"><button id="pair-button" data-action="pair-notebook">Подключить</button><button data-action="movie">Открыть выбранный фильм</button><button data-action="original-movie">Открыть на Rezka</button><button data-action="catalog">Каталог</button><button data-action="home">Назад</button></div>
-<p class="note">Адрес приложения не меняется. Ноутбук и терминал должны оставаться включёнными. После нового запуска backend понадобится новый адрес и код. Внутри поля ввода цифровые кнопки вводят цифры.</p>
+<p class="note">Адрес приложения не меняется. Ноутбук и терминал должны оставаться включёнными. Адрес ngrok остаётся тем же. После перезапуска backend введи новый код. Внутри поля ввода цифровые кнопки вводят цифры.</p>
 </section>
 <section id="movie" class="screen" hidden>
 <h2 id="movie-name">Фильм</h2><p id="movie-status" class="result" role="status">Загрузка…</p>
@@ -80,5 +80,5 @@
 <noscript>Включите JavaScript в браузере телевизора, чтобы использовать приложение.</noscript>
 </main>
 <footer><span>2 ↑ &nbsp; 4 ← &nbsp; 5 <b>Выбрать</b> &nbsp; 6 → &nbsp; 8 ↓ &nbsp; BACK <b>Назад</b></span><span id="last-key" aria-live="polite">Пульт: ожидание</span></footer>
-<script src="navigation.js?v=0.2.0"></script><script src="notebook.js?v=0.2.0"></script><script src="app.js?v=0.2.0"></script>
+<script src="navigation.js?v=0.2.1"></script><script src="notebook.js?v=0.2.1"></script><script src="app.js?v=0.2.1"></script>
 </body></html>
