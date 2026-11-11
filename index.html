@@ -5,41 +5,51 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10141c">
 <title>Rezka TV Lite</title>
-<link rel="stylesheet" href="style.css?v=0.1.4">
+<link rel="stylesheet" href="style.css?v=0.2.0">
 </head>
 <body>
-<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.1.4</span></header>
+<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.2.0</span></header>
 <main>
 <p class="eyebrow">PHILIPS · SAPHI</p>
 <h1>Большой экран.<br>Простое управление.</h1>
 <p class="intro">Начнём с проверки вашего телевизора. Выбор: 2 ↑, 4 ←, 6 →, 8 ↓. Открыть: 5. Назад: Back.</p>
 <div id="home" class="screen">
 <div class="tiles">
-<button data-action="catalog"><small>КАТАЛОГ / ПЕРВАЯ ВЕРСИЯ</small><strong>Фильмы и сериалы</strong><span>Лёгкий список с переходом на Rezka</span></button>
-<button data-action="notebook"><small>НОУТБУК / BACKEND</small><strong>Подключить ноутбук</strong><span>Одноразовый код и тест «Одиссеи»</span></button>
+<button data-action="catalog"><small>КАТАЛОГ / ПЕРВАЯ ВЕРСИЯ</small><strong>Фильмы и сериалы</strong><span>Поиск, выбор озвучки и качества</span></button>
+<button data-action="notebook"><small>НОУТБУК / BACKEND</small><strong>Подключить ноутбук</strong><span>Фильмы, озвучка и качество</span></button>
 <button data-action="remote"><small>01 / УПРАВЛЕНИЕ</small><strong>Проверить пульт</strong><span>Цифры 2, 4, 5, 6, 8 и Back</span></button>
 <button data-action="video"><small>02 / ВОСПРОИЗВЕДЕНИЕ</small><strong>Тест видео</strong><span>HTML5 · MP4 · HLS</span></button>
 <button data-action="diagnostics"><small>03 / СИСТЕМА</small><strong>Диагностика</strong><span>Браузер и сохранение настроек</span></button>
 
 </div>
-<p class="note">Каталог — подготовленный снимок главной страницы. «Одиссея» тестируется внутри приложения через ноутбук. Остальные карточки открывают сайт Rezka.</p>
+<p class="note">Каталог — подготовленный снимок главной страницы. Фильмы доступны внутри приложения через ноутбук. Сериалы пока открываются на сайте Rezka.</p>
 </div>
 <section id="catalog" class="screen" hidden>
 <h2>Фильмы и сериалы</h2>
-<p class="note">Лёгкий снимок главной страницы Rezka: названия и краткие сведения. «Одиссея» открывается внутри приложения после подключения ноутбука. Остальные карточки переходят на оригинальную страницу.</p>
+<p class="note">Лёгкий снимок главной страницы Rezka: названия и краткие сведения. Подключи ноутбук для поиска и просмотра фильмов. При открытии фильма можно выбрать озвучку и качество.</p>
+<label for="search-query">Название фильма</label><input id="search-query" type="text" maxlength="100" placeholder="Например, Матрица" autocomplete="off">
+<div class="controls"><button id="search-button" data-action="catalog-search">Найти фильмы</button><button data-action="notebook">Ноутбук</button></div>
 <p id="catalog-status" class="result" role="status">Каталог ещё не загружен.</p>
 <div id="catalog-list" class="catalog-list"></div>
 <div class="controls"><button data-action="catalog-refresh">Перечитать список</button><button data-action="integration">Диагностика подключения</button><button data-action="home">Назад</button></div>
-<p class="note">Список подготовлен на сервере GitHub и не обновляется автоматически. Кнопка перечитывает опубликованный снимок.</p>
+<p class="note">При открытии показан подготовленный список. Поиск обращается к Rezka через ноутбук и показывает первую страницу фильмов. «Перечитать список» возвращает исходные карточки.</p>
 </section>
 <section id="notebook" class="screen" hidden>
 <h2>Подключить ноутбук</h2><p>Запусти новый backend на ноутбуке и введи шестизначный код с его экрана. Код в чат отправлять не нужно.</p>
 <label for="backend-url">HTTPS-адрес backend</label><input id="backend-url" type="url" maxlength="250" placeholder="https://название.trycloudflare.com" autocomplete="off">
 <label for="backend-code">Одноразовый код с ноутбука</label><input id="backend-code" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off">
 <p id="notebook-status" class="result" role="status">Ноутбук ещё не подключён.</p>
-<div class="controls"><button id="pair-button" data-action="pair-notebook">Подключить</button><button data-action="movie">Запустить Одиссею</button><button data-action="original-movie">Открыть на Rezka</button><button data-action="home">Назад</button></div>
+<div class="controls"><button id="pair-button" data-action="pair-notebook">Подключить</button><button data-action="movie">Открыть выбранный фильм</button><button data-action="original-movie">Открыть на Rezka</button><button data-action="catalog">Каталог</button><button data-action="home">Назад</button></div>
 <p class="note">Адрес приложения не меняется. Ноутбук и терминал должны оставаться включёнными. После нового запуска backend понадобится новый адрес и код. Внутри поля ввода цифровые кнопки вводят цифры.</p>
 </section>
+<section id="movie" class="screen" hidden>
+<h2 id="movie-name">Фильм</h2><p id="movie-status" class="result" role="status">Загрузка…</p>
+<p id="movie-voice-label"></p><p id="movie-quality-label"></p>
+<div class="movie-menu"><button id="movie-play" data-action="movie-play">Смотреть / продолжить</button><button id="movie-voices" data-action="movie-voices">Выбрать озвучку</button><button id="movie-qualities" data-action="movie-quality">Выбрать качество</button><button data-action="original-movie">Открыть фильм на Rezka</button><button data-action="catalog">Каталог</button></div>
+<p class="note">По умолчанию — максимальное доступное качество выбранной озвучки. Подписочные варианты отмечены отдельно. Вход в аккаунт Rezka в Lite пока не подключён.</p>
+</section>
+<section id="voices" class="screen" hidden><h2 id="voices-title">Озвучка</h2><p id="voice-status" class="result" role="status"></p><div id="voice-list" class="choice-list"></div><div class="controls"><button data-action="movie-info">К фильму</button></div></section>
+<section id="qualities" class="screen" hidden><h2 id="qualities-title">Качество</h2><p id="quality-status" class="result" role="status"></p><div id="quality-list" class="choice-list"></div><div class="controls"><button data-action="movie-info">К фильму</button></div></section>
 <section id="remote" class="screen" hidden>
 <h2>Проверка пульта</h2><p>Нажмите 2 ↑, 4 ←, 6 →, 8 ↓, 5 — выбор, Back — назад. Цифры уже настроены, калибровка не нужна. Если стрелки двигают курсор, наведите его на кнопку и нажмите OK: ниже появится «щелчок / OK».</p>
 <p id="key-result" class="result">Ожидаю нажатие…</p><p id="key-progress"></p>
@@ -52,7 +62,7 @@
 <p id="media-status" class="result" role="status">Выберите тестовый MP4, затем нажмите «Пуск / пауза».</p>
 <div class="controls"><button data-action="play">Пуск / пауза</button><button data-action="fullscreen">Полный экран</button><button data-action="home">Назад</button></div>
 <div id="test-controls" class="controls"><button data-action="sample">Тестовый MP4</button><button data-action="external-sample">Внешний MP4</button><button data-action="direct-sample">Открыть MP4 напрямую</button></div>
-<div id="movie-controls" class="controls" hidden><p id="movie-quality"></p><button data-action="movie-quality">Следующее качество</button><button data-action="movie">Обновить источник</button><button data-action="notebook">Ноутбук</button></div>
+<div id="movie-controls" class="controls" hidden><p id="movie-quality"></p><button data-action="movie-voices">Озвучка</button><button data-action="movie-quality">Качество</button><button data-action="movie-info">Карточка фильма</button><button data-action="movie-refresh">Обновить источник</button></div>
 <pre id="media-detail" aria-live="polite">Медиа ещё не выбрано.</pre>
 <p class="note">В фокусе проигрывателя: 4 / 6 — ±10 секунд, 5 — пуск / пауза, 2 / 8 — к кнопкам. Назад: выход из полного экрана или возврат. Тестовый ролик: 5 секунд, H.264 Baseline + AAC, 320×180, около 30 КБ. Цветная таблица и тихий сигнал. Внешний MP4: Sintel, Blender Foundation, CC BY 3.0, media.w3.org.</p>
 </section>
@@ -70,5 +80,5 @@
 <noscript>Включите JavaScript в браузере телевизора, чтобы использовать приложение.</noscript>
 </main>
 <footer><span>2 ↑ &nbsp; 4 ← &nbsp; 5 <b>Выбрать</b> &nbsp; 6 → &nbsp; 8 ↓ &nbsp; BACK <b>Назад</b></span><span id="last-key" aria-live="polite">Пульт: ожидание</span></footer>
-<script src="navigation.js?v=0.1.4"></script><script src="notebook.js?v=0.1.4"></script><script src="app.js?v=0.1.4"></script>
+<script src="navigation.js?v=0.2.0"></script><script src="notebook.js?v=0.2.0"></script><script src="app.js?v=0.2.0"></script>
 </body></html>
