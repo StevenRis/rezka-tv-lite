@@ -5,23 +5,32 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10141c">
 <title>Rezka TV Lite</title>
-<link rel="stylesheet" href="style.css?v=0.1.1">
+<link rel="stylesheet" href="style.css?v=0.1.2">
 </head>
 <body>
-<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.1.1</span></header>
+<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.1.2</span></header>
 <main>
 <p class="eyebrow">PHILIPS · SAPHI</p>
 <h1>Большой экран.<br>Простое управление.</h1>
 <p class="intro">Начнём с проверки вашего телевизора. Выберите тест стрелками и нажмите OK.</p>
 <div id="home" class="screen">
 <div class="tiles">
+<button data-action="catalog"><small>КАТАЛОГ / ПЕРВАЯ ВЕРСИЯ</small><strong>Фильмы и сериалы</strong><span>Лёгкий список с переходом на Rezka</span></button>
 <button data-action="remote"><small>01 / УПРАВЛЕНИЕ</small><strong>Проверить пульт</strong><span>Стрелки, OK и «Назад»</span></button>
 <button data-action="video"><small>02 / ВОСПРОИЗВЕДЕНИЕ</small><strong>Тест видео</strong><span>HTML5 · MP4 · HLS</span></button>
 <button data-action="diagnostics"><small>03 / СИСТЕМА</small><strong>Диагностика</strong><span>Браузер и сохранение настроек</span></button>
-<button data-action="integration"><small>04 / ИСТОЧНИК</small><strong>Подключение Rezka</strong><span>Проверка доступа к сайту</span></button>
+
 </div>
-<p class="note">Это тестовая версия. Каталог фильмов пока не подключён.</p>
+<p class="note">Каталог — подготовленный снимок главной страницы. Выбранный фильм пока открывается на сайте Rezka.</p>
 </div>
+<section id="catalog" class="screen" hidden>
+<h2>Фильмы и сериалы</h2>
+<p class="note">Лёгкий снимок главной страницы Rezka: названия и краткие сведения. Выбор карточки откроет оригинальную страницу в браузере. Просмотр внутри приложения пока не подключён.</p>
+<p id="catalog-status" class="result" role="status">Каталог ещё не загружен.</p>
+<div id="catalog-list" class="catalog-list"></div>
+<div class="controls"><button data-action="catalog-refresh">Перечитать список</button><button data-action="integration">Диагностика подключения</button><button data-action="home">Назад</button></div>
+<p class="note">Список подготовлен на сервере GitHub и не обновляется автоматически. Кнопка перечитывает опубликованный снимок.</p>
+</section>
 <section id="remote" class="screen" hidden>
 <h2>Проверка пульта</h2><p>Нажмите ↑ ↓ ← →, OK и «Назад». Если стрелки двигают курсор, наведите его на кнопку и нажмите OK: ниже появится «щелчок / OK».</p>
 <p id="key-result" class="result">Ожидаю нажатие…</p><p id="key-progress"></p>
@@ -50,5 +59,5 @@
 <noscript>Включите JavaScript в браузере телевизора, чтобы использовать приложение.</noscript>
 </main>
 <footer><span>↑ ↓ ← → <b>Выбор</b> &nbsp; OK <b>Открыть</b> &nbsp; BACK <b>Назад</b></span><span id="last-key" aria-live="polite">Пульт: ожидание</span></footer>
-<script src="navigation.js?v=0.1.1"></script><script src="app.js?v=0.1.1"></script>
+<script src="navigation.js?v=0.1.2"></script><script src="app.js?v=0.1.2"></script>
 </body></html>
