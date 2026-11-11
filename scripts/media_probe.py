@@ -2,6 +2,7 @@
 import gzip
 import json
 import re
+import urllib.error
 import urllib.parse
 import urllib.request
 import zlib
@@ -57,6 +58,27 @@ for match in re.finditer(r"initCDN(?:Movies|Series)Events\(", html):
                 info["streams_type"] = type(streams).__name__
                 info["streams_length"] = len(streams) if isinstance(streams, str) else 0
                 info["default_quality"] = config.get("default_quality")
+                for key in ("url", "quality"):
+                    value = config.get(key)
+                    info[key + "_type"] = type(value).__name__
+                    if isinstance(value, str):
+                        info[key + "_length"] = len(value)
+                        info[key + "_prefix_kind"] = "http" if value.startswith(("http://", "https://")) else ("encoded" if value.startswith("#") else "other")
+                        if key == "url" and value.startswith(("http://", "https://")):
+                            source = urllib.parse.urlsplit(value)
+                            info["media_host"] = source.netloc
+                            info["media_path_suffix"] = source.path.rsplit("/", 1)[-1][-20:]
+                            info["media_has_query"] = bool(source.query)
+                            media_request = urllib.request.Request(value, method="HEAD", headers={"Origin": "https://stevenris.github.io"})
+                            try:
+                                with urllib.request.urlopen(media_request, timeout=15) as media_response:
+                                    info["media_status"] = media_response.status
+                                    info["media_content_type"] = media_response.headers.get("Content-Type")
+                                    info["media_allow_origin"] = media_response.headers.get("Access-Control-Allow-Origin")
+                                    info["media_accept_ranges"] = media_response.headers.get("Accept-Ranges")
+                                    info["media_content_length"] = media_response.headers.get("Content-Length")
+                            except (urllib.error.URLError, TimeoutError) as error:
+                                info["media_request_error"] = type(error).__name__
         except (ValueError, TypeError):
             info["config_parseable"] = False
     inits.append(info)
