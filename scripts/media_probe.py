@@ -49,6 +49,41 @@ for match in re.finditer(r"initCDN(?:Movies|Series)Events\(", html):
     chunk = html[match.start():match.start()+100000]
     first_object = chunk.find("{")
     info = {"function": match.group(0)[:-1]}
+    args = re.match(r"initCDNMoviesEvents\(\s*(\d+)\s*,\s*(\d+)", chunk)
+    info["numeric_arguments"] = [int(x) for x in args.groups()] if args else []
+    restricted = re.search(r'class="b-player__restricted__block_message"[^>]*>(.*?)</div>', html, re.S)
+    if restricted:
+        info["restriction_message"] = re.sub(r"<[^>]*>", " ", restricted.group(1)).strip()[:220]
+    if args and not restricted:
+        form = urllib.parse.urlencode({
+            "id": args.group(1), "translator_id": args.group(2),
+            "is_camrip": "0", "is_ads": "0", "is_director": "0", "action": "get_movie"
+        }).encode()
+        ajax_request = urllib.request.Request(
+            "https://rezka.ag/ajax/get_cdn_series/", data=form,
+            headers={"User-Agent": "RezkaTVLite/0.1 compatibility-check", "Referer": PAGE,
+                     "X-Requested-With": "XMLHttpRequest",
+                     "Content-Type": "application/x-www-form-urlencoded"}
+        )
+        try:
+            with urllib.request.urlopen(ajax_request, timeout=20) as ajax_response:
+                ajax_body = ajax_response.read(262144)
+                if ajax_response.headers.get("Content-Encoding") == "gzip":
+                    ajax_body = gzip.decompress(ajax_body)
+                payload = json.loads(ajax_body)
+                info["ajax_status"] = ajax_response.status
+                info["ajax_keys"] = list(payload)
+                info["ajax_success"] = payload.get("success")
+                value = payload.get("url")
+                info["ajax_url_type"] = type(value).__name__
+                info["ajax_url_length"] = len(value) if isinstance(value, str) else 0
+                if isinstance(value, str):
+                    info["ajax_url_kind"] = "encoded" if value.startswith("#") else ("http" if value.startswith("http") else "other")
+                error = payload.get("message") or payload.get("error")
+                if error:
+                    info["ajax_message"] = re.sub(r"https?://\S+", "[url]", str(error))[:160]
+        except (urllib.error.URLError, TimeoutError, ValueError) as error:
+            info["ajax_error"] = type(error).__name__
     if first_object >= 0:
         try:
             config, _ = json.JSONDecoder().raw_decode(chunk[first_object:])
