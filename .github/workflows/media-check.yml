@@ -1,0 +1,19 @@
+name: Movie player compatibility
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/media-check.yml'
+      - 'scripts/media_probe.py'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Inspect public movie player
+        run: python3 scripts/media_probe.py
