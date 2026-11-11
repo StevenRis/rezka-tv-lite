@@ -16,6 +16,8 @@ jobs:
       - name: Check public homepage without cookies or authentication
         shell: python
         run: |
+          import gzip
+          import zlib
           import json
           import re
           import urllib.error
@@ -39,6 +41,11 @@ jobs:
 
           with response:
               body = response.read(262144)
+              encoding = response.headers.get("Content-Encoding", "").lower()
+              if encoding == "gzip":
+                  body = gzip.decompress(body)
+              elif encoding == "deflate":
+                  body = zlib.decompress(body)
               html = body.decode("utf-8", errors="replace")
               title = re.search(r"<title[^>]*>(.*?)</title>", html, re.I | re.S)
               address = urllib.parse.urlsplit(response.geturl())
@@ -47,6 +54,8 @@ jobs:
                   "final_origin": address.scheme + "://" + address.netloc,
                   "bytes_read_up_to_256KiB": len(body),
                   "title": re.sub(r"\\s+", " ", title.group(1))[:180] if title else None,
+                  "content_encoding": encoding,
+                  "html_start": html[:350],
                   "content_type": response.headers.get("Content-Type"),
                   "access_control_allow_origin": response.headers.get("Access-Control-Allow-Origin"),
                   "x_frame_options": response.headers.get("X-Frame-Options"),
