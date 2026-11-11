@@ -3,3 +3,5 @@
 .detail-screen h1,.detail-screen .intro,.detail-screen .eyebrow{display:none}#media-detail{font-size:16px;line-height:1.4;max-height:240px;overflow:auto}body:not([data-input="keys"]) button:hover{border-color:#b4f28a;background:#283f2c}
 
 .catalog-list button{display:inline-block;vertical-align:top;width:46%;margin:8px 1%;min-height:110px}.catalog-list strong{display:block;font-size:25px;margin-bottom:12px}.catalog-list span{display:block;color:#bac6d7;font-size:18px;line-height:1.4}@media(max-width:760px){.catalog-list button{width:96%}}
+
+label{display:block;margin:14px 0 6px}input{font:22px Arial,sans-serif;width:100%;max-width:900px;padding:14px;color:#fff;background:#1c2533;border:2px solid #596d88;border-radius:8px}input:focus{outline:3px solid #b4f28a}#backend-code{max-width:300px;font-size:28px;letter-spacing:5px}
