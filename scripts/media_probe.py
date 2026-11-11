@@ -44,7 +44,7 @@ parser = PlayerHTML()
 parser.feed(html)
 title = re.search(r"<title[^>]*>(.*?)</title>", html, re.I | re.S)
 inits = []
-for match in re.finditer(r"initCDN(?:Movies|Series)Events\\(", html):
+for match in re.finditer(r"initCDN(?:Movies|Series)Events\(", html):
     chunk = html[match.start():match.start()+100000]
     first_object = chunk.find("{")
     info = {"function": match.group(0)[:-1]}
@@ -63,7 +63,7 @@ for match in re.finditer(r"initCDN(?:Movies|Series)Events\\(", html):
 texts = []
 for match in re.finditer(r"(?:еще не вышел|ещё не вышел|трейлер|Трейлер|дата выхода|Дата выхода)", html):
     snippet = re.sub(r"<[^>]*>", " ", html[max(0, match.start()-80):match.end()+180])
-    snippet = re.sub(r"\\s+", " ", snippet).strip()
+    snippet = re.sub(r"\s+", " ", snippet).strip()
     if snippet and len(texts) < 6: texts.append(snippet[:220])
 print("PLAYER_REPORT=" + json.dumps({
     "status": status,
