@@ -8,13 +8,42 @@
   function save(){try{localStorage.setItem('rtl-keys',JSON.stringify(custom));}catch(ignore){}}
   function collect(){buttons=el(page).getElementsByTagName('button');index=0;focus();}
   function focus(){var i;for(i=0;i<buttons.length;i++){buttons[i].className=i===index?'selected':'';}if(buttons[index]){buttons[index].focus();}}
-  function show(name){var all=document.querySelectorAll('.screen'),i;step=-1;for(i=0;i<all.length;i++){all[i].hidden=all[i].id!==name;}if(page==='video'&&name!=='video'){player.pause();}page=name;collect();if(name==='diagnostics'){report();}}
+  function show(name){var all=document.querySelectorAll('.screen'),i;step=-1;for(i=0;i<all.length;i++){all[i].hidden=all[i].id!==name;}if(page==='video'&&name!=='video'){player.pause();}page=name;document.body.className=name==='home'?'':'detail-screen';collect();if(name==='diagnostics'){report();}}
   function support(type){return player.canPlayType ? (player.canPlayType(type)||'нет'):'нет API';}
-  function report(){text('report','Rezka TV Lite 0.1.0\nЦель: Philips 55PUS7607/12 · SAPHI\nПрошивка (указана пользователем): TPN226E_V226.003.087.001\nРазмер окна: '+window.innerWidth+' × '+window.innerHeight+'\nЭкран: '+screen.width+' × '+screen.height+'\nlocalStorage: '+storage+'\nMP4 / H.264 + AAC: '+support('video/mp4; codecs="avc1.42E01E, mp4a.40.2"')+'\nHLS native: '+support('application/vnd.apple.mpegurl')+'\nMediaSource API: '+(window.MediaSource?'есть':'нет')+'\nXMLHttpRequest: '+(window.XMLHttpRequest?'есть':'нет')+'\nUser Agent: '+navigator.userAgent+'\nНазначенные коды: '+JSON.stringify(custom)+'\nПолученные действия: '+Object.keys(seen).join(', '));}
-  function toggle(){if(!player.getAttribute('src')){text('media-status','Сначала выберите «Тестовый MP4».');return;}if(player.paused){var promise=player.play();if(promise&&promise['catch']){promise['catch'](function(){text('media-status','Браузер отклонил запуск видео. Нажмите «Пуск / пауза» повторно.');});}}else{player.pause();}}
+  function report(){text('report','Rezka TV Lite 0.1.1\nЦель: Philips 55PUS7607/12 · SAPHI\nПрошивка (указана пользователем): TPN226E_V226.003.087.001\nРазмер окна: '+window.innerWidth+' × '+window.innerHeight+'\nЭкран: '+screen.width+' × '+screen.height+'\nlocalStorage: '+storage+'\nMP4 / H.264 + AAC: '+support('video/mp4; codecs="avc1.42E01E, mp4a.40.2"')+'\nHLS native: '+support('application/vnd.apple.mpegurl')+'\nMediaSource API: '+(window.MediaSource?'есть':'нет')+'\nXMLHttpRequest: '+(window.XMLHttpRequest?'есть':'нет')+'\nUser Agent: '+navigator.userAgent+'\nНазначенные коды: '+JSON.stringify(custom)+'\nПолученные действия: '+Object.keys(seen).join(', '));}
+  var mediaLog=[], mediaGeneration=0;
+  function mediaDetail(message){
+    var error=player.error;
+    mediaLog.push(message);
+    if(mediaLog.length>8){mediaLog.shift();}
+    text('media-detail','Источник: '+(player.currentSrc||player.getAttribute('src')||'не выбран')+'\nreadyState='+player.readyState+' networkState='+player.networkState+' mediaError='+(error?error.code:'нет')+'\n'+mediaLog.join('\n'));
+  }
+  function loadSample(url){
+    mediaGeneration++;
+    player.pause();
+    mediaLog=[];
+    player.src=url;
+    player.load();
+    text('media-status','Источник выбран. Нажмите «Пуск / пауза» или треугольник на самом видео.');
+    mediaDetail('Загрузка запрошена');
+  }
+  function playError(error,generation){
+    if(generation!==mediaGeneration){return;}
+    var message=(error&&error.name?error.name:'Ошибка')+': '+(error&&error.message?error.message:'без описания');
+    text('media-status','Не удалось запустить видео: '+message);
+    mediaDetail(message);
+  }
+  function toggle(){
+    if(!player.getAttribute('src')){text('media-status','Сначала выберите «Тестовый MP4».');return;}
+    if(player.paused){
+      var generation=mediaGeneration;
+      try {var promise=player.play();if(promise&&promise['catch']){promise['catch'](function(error){playError(error,generation);});}}
+      catch(error){playError(error,generation);}
+    }else{player.pause();}
+  }
   function probeRezka(){if(probe){return;}text('network-status','Проверяю HTTPS-запрос…');try{probe=new XMLHttpRequest();probe.open('GET','https://rezka.ag/',true);probe.timeout=12000;probe.onload=function(){text('network-status',probe.status>=200&&probe.status<300?'Ответ читается: HTTP '+probe.status+'. Формат каталога ещё не проверен.':'Получен HTTP '+probe.status+'. Каталог не подключён.');probe=null;};probe.onerror=function(){text('network-status','Ответ недоступен. Возможны CORS, TLS, сеть или ограничения сайта. Откройте сайт отдельно для сравнения.');probe=null;};probe.ontimeout=function(){text('network-status','Нет ответа за 12 секунд. Это не доказывает недоступность сайта на телевизоре.');probe=null;};probe.send(null);}catch(ignore){probe=null;text('network-status','Не удалось начать XMLHttpRequest в этом браузере.');}}
-  function run(action){if(action==='home'){show('home');}else if(action==='remote'||action==='video'||action==='diagnostics'||action==='integration'){show(action);}else if(action==='refresh'){report();}else if(action==='calibrate'){step=0;pending={};text('calibration','Нажмите: '+steps[step]+' (↑). Escape отменяет настройку.');}else if(action==='sample'){player.src='https://media.w3.org/2010/05/sintel/trailer.mp4';player.load();toggle();}else if(action==='play'){toggle();}else if(action==='fullscreen'){var fn=player.requestFullscreen||player.webkitRequestFullscreen||player.webkitEnterFullscreen;if(fn){try{var p=fn.call(player);if(p&&p['catch']){p['catch'](function(){text('media-status','Полный экран недоступен.');});}}catch(ignore){text('media-status','Полный экран недоступен.');}}else{text('media-status','API полного экрана отсутствует.');}}else if(action==='probe'){probeRezka();}else if(action==='rezka'){window.location.href='https://rezka.ag/';}}
-  document.addEventListener('click',function(event){var node=event.target;while(node&&node!==document){if(node.getAttribute&&node.getAttribute('data-action')){run(node.getAttribute('data-action'));return;}node=node.parentNode;}});
+  function run(action){if(action==='home'){show('home');}else if(action==='remote'||action==='video'||action==='diagnostics'||action==='integration'){show(action);}else if(action==='refresh'){report();}else if(action==='calibrate'){step=0;pending={};text('calibration','Нажмите: '+steps[step]+' (↑). Escape отменяет настройку.');}else if(action==='sample'){loadSample('media/test-baseline.mp4');}else if(action==='external-sample'){loadSample('https://media.w3.org/2010/05/sintel/trailer.mp4');}else if(action==='direct-sample'){window.location.href='media/test-baseline.mp4';}else if(action==='play'){toggle();}else if(action==='fullscreen'){var fn=player.requestFullscreen||player.webkitRequestFullscreen||player.webkitEnterFullscreen;if(fn){try{var p=fn.call(player);if(p&&p['catch']){p['catch'](function(){text('media-status','Полный экран недоступен.');});}}catch(ignore){text('media-status','Полный экран недоступен.');}}else{text('media-status','API полного экрана отсутствует.');}}else if(action==='probe'){probeRezka();}else if(action==='rezka'){window.location.href='https://rezka.ag/';}}
+  document.addEventListener('click',function(event){var node=event.target;while(node&&node!==document){if(node.getAttribute&&node.getAttribute('data-action')){text('last-key','Щелчок / OK: '+node.textContent);text('key-result','Получен щелчок / OK: '+node.textContent);run(node.getAttribute('data-action'));return;}node=node.parentNode;}});
   document.addEventListener('focusin',function(event){var i;for(i=0;i<buttons.length;i++){if(buttons[i]===event.target){index=i;for(var j=0;j<buttons.length;j++){buttons[j].className=j===i?'selected':'';}break;}}});
   document.addEventListener('keydown',function(event){var code=event.keyCode||event.which,action=TVNav.action(code,custom),line='Код '+code+' · '+(event.key||'без имени')+' · '+(action||'не назначено');text('last-key',line);text('key-result',line);
     if(step>=0){event.preventDefault();if(code===27){step=-1;text('calibration','Настройка отменена.');return;}if(event.repeat){return;}if(step>0&&pending[code]){text('calibration','Этот код уже назначен. Нажмите другую кнопку: '+steps[step]);return;}pending[code]=steps[step];step++;if(step===steps.length){step=-1;custom=pending;save();text('calibration','Коды сохранены. Проверьте стрелки и возврат.');}else{text('calibration','Нажмите: '+steps[step]);}return;}
@@ -25,8 +54,10 @@
     if(action==='ok'){if(buttons[index]){run(buttons[index].getAttribute('data-action'));}}else if(page==='video'&&action==='up'){player.focus();}else{index=TVNav.next(index,action,buttons.length,page==='home'&&window.innerWidth>760?2:1);focus();}
   },false);
   player.addEventListener('playing',function(){text('media-status','Видео воспроизводится. Проверьте изображение и звук.');});
-  player.addEventListener('pause',function(){text('media-status','Пауза.');});
-  player.addEventListener('error',function(){text('media-status','Ошибка видео: '+(player.error?player.error.code:'неизвестно')+'. Возможны сеть, TLS или неподдерживаемый кодек.');});
+  player.addEventListener('pause',function(){mediaDetail('pause');});
+  player.addEventListener('error',function(){text('media-status','Ошибка медиа: '+(player.error?player.error.code:'неизвестно')+' · '+(player.error&&player.error.message?player.error.message:'без описания'));mediaDetail('error');});
+  var mediaEvents=['loadstart','loadedmetadata','loadeddata','canplay','waiting','stalled','playing','ended'];
+  for(var m=0;m<mediaEvents.length;m++){(function(name){player.addEventListener(name,function(){mediaDetail(name);});}(mediaEvents[m]));}
   text('codecs','MP4: '+support('video/mp4; codecs="avc1.42E01E, mp4a.40.2"')+' · Native HLS: '+support('application/vnd.apple.mpegurl'));
   show('home');
 }());

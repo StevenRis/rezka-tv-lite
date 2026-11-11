@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10141c">
 <title>Rezka TV Lite</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=0.1.1">
 </head>
 <body>
-<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.1.0</span></header>
+<header><span class="brand">REZKA <b>TV LITE</b></span><span class="badge">Лаборатория совместимости · 0.1.1</span></header>
 <main>
 <p class="eyebrow">PHILIPS · SAPHI</p>
 <h1>Большой экран.<br>Простое управление.</h1>
@@ -23,7 +23,7 @@
 <p class="note">Это тестовая версия. Каталог фильмов пока не подключён.</p>
 </div>
 <section id="remote" class="screen" hidden>
-<h2>Проверка пульта</h2><p>Нажмите ↑ ↓ ← →, OK и «Назад». Полученные кнопки отмечаются ниже.</p>
+<h2>Проверка пульта</h2><p>Нажмите ↑ ↓ ← →, OK и «Назад». Если стрелки двигают курсор, наведите его на кнопку и нажмите OK: ниже появится «щелчок / OK».</p>
 <p id="key-result" class="result">Ожидаю нажатие…</p><p id="key-progress"></p>
 <div class="controls"><button data-action="calibrate">Настроить коды пульта</button><button data-action="home">На главный экран</button></div>
 <p id="calibration" class="note">Если стрелки не работают, выберите настройку кнопкой OK или мышью.</p>
@@ -31,9 +31,10 @@
 <section id="video" class="screen" hidden>
 <h2>Тест HTML5-видео</h2><p id="codecs"></p>
 <video id="player" preload="none" playsinline controls></video>
-<p id="media-status" class="result" role="status">Выберите MP4. Загрузка начнётся только по нажатию.</p>
-<div class="controls"><button data-action="sample">Тестовый MP4</button><button data-action="play">Пуск / пауза</button><button data-action="fullscreen">Полный экран</button><button data-action="home">Назад</button></div>
-<p class="note">Стрелки ← → в проигрывателе: ±10 секунд. OK: пуск / пауза. Назад: выход из полного экрана или возврат. Ролик: Sintel, Blender Foundation, CC BY 3.0, media.w3.org.</p>
+<p id="media-status" class="result" role="status">Выберите тестовый MP4, затем нажмите «Пуск / пауза».</p>
+<div class="controls"><button data-action="sample">Тестовый MP4</button><button data-action="play">Пуск / пауза</button><button data-action="external-sample">Внешний MP4</button><button data-action="direct-sample">Открыть MP4 напрямую</button><button data-action="fullscreen">Полный экран</button><button data-action="home">Назад</button></div>
+<pre id="media-detail" aria-live="polite">Медиа ещё не выбрано.</pre>
+<p class="note">Стрелки ← → в проигрывателе: ±10 секунд. OK: пуск / пауза. Назад: выход из полного экрана или возврат. Тестовый ролик: 5 секунд, H.264 Baseline + AAC, 320×180, около 30 КБ. Цветная таблица и тихий сигнал. Внешний MP4: Sintel, Blender Foundation, CC BY 3.0, media.w3.org.</p>
 </section>
 <section id="diagnostics" class="screen" hidden>
 <h2>Диагностика телевизора</h2><pre id="report"></pre>
@@ -49,5 +50,5 @@
 <noscript>Включите JavaScript в браузере телевизора, чтобы использовать приложение.</noscript>
 </main>
 <footer><span>↑ ↓ ← → <b>Выбор</b> &nbsp; OK <b>Открыть</b> &nbsp; BACK <b>Назад</b></span><span id="last-key" aria-live="polite">Пульт: ожидание</span></footer>
-<script src="navigation.js"></script><script src="app.js"></script>
+<script src="navigation.js?v=0.1.1"></script><script src="app.js?v=0.1.1"></script>
 </body></html>
